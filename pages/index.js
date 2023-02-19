@@ -6,7 +6,8 @@ import { useState, useEffect } from "react"
 import { BigNumber, ethers } from "ethers";
 import uwuclaim from "../contracts/uwuclaim.json"
 
-const uwuClaimAddress = "0xDB5C23ae97f76dacC907f5F13bDa54131C8e9e5a";
+const incentiveControllerV2 = "0xDB5C23ae97f76dacC907f5F13bDa54131C8e9e5a";
+const incentiveControllerV1 = "0x21953192664867e19F85E96E1D1Dd79dc31cCcdB";
 const uwuContracts = [
   "0xb95BD0793bCC5524AF358ffaae3e38c3903C7626",
   "0x1254B1fd988A1168E44a4588bb503a867F8E410F",
@@ -68,6 +69,7 @@ const uwuContractNames = [
 export default function Home() {
   const { active, account, library, connector, activate, deactivate } = useWeb3React()
   const [UwURewards, setUwURewards] = useState([])
+  const [baseRewards, setBaseRewards] = useState(0)
   const [checked, setChecked] = useState([]);
   const [sumChecked, setSumChecked] = useState(0);
 
@@ -114,34 +116,60 @@ export default function Home() {
     for (var i = 0; i < updatedList.length; i++) {
       sum = sum.add(BigNumber.from(updatedList[i]))
     }
-    setSumChecked(sum.toString());
+    setSumChecked(sum.add(BigNumber.from(baseRewards)).toString());
   };
 
   async function updateTokenState() {
     await getUwURewardsBalance();
+    var sum = BigNumber.from(0);
+    for (var i = 0; i < checked.length; i++) {
+      sum = sum.add(BigNumber.from(checked[i]))
+    }
+    setSumChecked(sum.add(BigNumber.from(baseRewards)).toString());
   }
 
   async function getUwURewardsBalance() {
     console.log("Calling reward balances");
-    const contract = new Contract(uwuclaim, uwuClaimAddress, {
+    const contract = new Contract(uwuclaim, incentiveControllerV2, {
       from: account, // default from address
       gasPrice: '0'
     });
     contract.setProvider(library);
     const rewards = await contract.methods.claimableReward(account, uwuContracts).call();
+    const baseClaimable = await contract.methods.userBaseClaimable(account).call();
     console.log(rewards);
+    console.log(baseClaimable);
+
+    // const contract2 = new Contract(uwuclaim, incentiveControllerV1, {
+    //   from: account, // default from address
+    //   gasPrice: '0'
+    // });
+    // contract2.setProvider(library);
+    // const rewards2 = await contract2.methods.claimableReward(account, uwuContracts).call();
+    // const baseClaimable2 = await contract.methods.userBaseClaimable(account).call();
+    // console.log(rewards2);
+    // console.log(baseClaimable2);
+
     var indexed = []
+
     for (var i = 0; i < rewards.length; i++) {
-      if (rewards[i] != 0) {
-        indexed.push({ idx: i, val: rewards[i] });
+      var r = BigNumber.from(rewards[i]).add(BigNumber.from(0));
+      if (!r.eq(BigNumber.from(0))) {
+        indexed.push({ idx: i, val: r });
       }
     }
-    console.log(indexed[0]);
     setUwURewards(indexed);
+    setBaseRewards(baseClaimable);
+
+    var sum = BigNumber.from(0);
+    for (var i = 0; i < checked.length; i++) {
+      sum = sum.add(BigNumber.from(checked[i]))
+    }
+    setSumChecked(sum.add(BigNumber.from(baseClaimable)).toString());
   }
 
   async function claimUwU() {
-    const contract = new Contract(uwuclaim, uwuClaimAddress, {
+    const contract = new Contract(uwuclaim, incentiveControllerV2, {
       from: account, // default from address
     });
     contract.setProvider(library);
