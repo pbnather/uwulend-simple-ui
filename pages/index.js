@@ -178,7 +178,7 @@ export default function Home() {
         </div> : <span></span>}<br />
         {active ? <span><button disabled={sumChecked == 0} onClick={claimUwU}>Vest {Number(ethers.utils.formatEther(sumChecked)).toFixed(2)} UwU</button></span> : <span></span>}
         <br /><br />
-        <p><a color="green" href="asfasf">Github ↗</a>, copyright by pbnather 2023</p>
+        <p><a ref="https://github.com/pbnather/uwulend-simple-ui">Github ↗</a>, copyright by <a ref="https://twitter.com/pbnather">@pbnather</a> 2023</p>
       </div>
     </div >
   )
