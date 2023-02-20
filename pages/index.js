@@ -89,6 +89,9 @@ export default function Home() {
   async function disconnect() {
     try {
       deactivate()
+      setUwURewards([])
+      setBaseRewards(0)
+      setSumChecked(0)
     } catch (ex) {
       console.log(ex)
     }
@@ -203,6 +206,7 @@ export default function Home() {
             </div>
           ))}
         </div> : <span></span>}<br />
+        {UwURewards.length != 0 ? <p>Always claimable: {Number(ethers.utils.formatEther(baseRewards)).toFixed(2)} UwU</p> : <span></span>}
         {active ? <span><button disabled={sumChecked == 0} onClick={claimUwU}>Vest {Number(ethers.utils.formatEther(sumChecked)).toFixed(2)} UwU</button></span> : <span></span>}
         <br /><br />
         <p><a color="green" href="https://github.com/pbnather/uwulend-simple-ui">Github ↗</a>, copyright by <a color="green" href="https://twitter.com/pbnather">@pbnather</a> 2023</p>
