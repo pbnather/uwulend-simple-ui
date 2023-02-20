@@ -74,7 +74,7 @@ export default function Home() {
   const [sumChecked, setSumChecked] = useState(0);
 
   useEffect(() => {
-    console.log(account, active);
+    console.log(active);
     if (active) updateTokenState();
   }, [active]);
 
@@ -125,7 +125,6 @@ export default function Home() {
     for (var i = 0; i < checked.length; i++) {
       sum = sum.add(BigNumber.from(checked[i]))
     }
-    setSumChecked(sum.add(BigNumber.from(baseRewards)).toString());
   }
 
   async function getUwURewardsBalance() {
@@ -158,14 +157,14 @@ export default function Home() {
         indexed.push({ idx: i, val: r });
       }
     }
-    setUwURewards(indexed);
-    setBaseRewards(baseClaimable);
 
     var sum = BigNumber.from(0);
     for (var i = 0; i < checked.length; i++) {
       sum = sum.add(BigNumber.from(checked[i]))
     }
     setSumChecked(sum.add(BigNumber.from(baseClaimable)).toString());
+    setUwURewards(indexed);
+    setBaseRewards(baseClaimable);
   }
 
   async function claimUwU() {
