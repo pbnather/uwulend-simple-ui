@@ -34,7 +34,9 @@ const uwuContracts = [
   "0x8028Ea7da2ea9BCb9288C1F6f603169B8AEa90A6",
   "0x39A873F3f60Bb4cd81fE46f3Beb6285bdb7726b9",
   "0x51144708b82eA3b5b1002C9DC38b71ec63b7e670",
-  "0xEc12f63116bD2493104a26FbDBCd70f51ab7B2C1"
+  "0xEc12f63116bD2493104a26FbDBCd70f51ab7B2C1",
+  "0xD1E6b03bF65B381cBDecCf275535d40D4C3510E2",
+  "0x453842ba9dCD4569407B2adEDeB8636314D023D3"
 ];
 
 const uwuContractNames = [
@@ -46,8 +48,8 @@ const uwuContractNames = [
   "uWETH (borrow)",
   "uWBTC (deposit)",
   "uWBTC (borrow)",
-  "uSIFU (deposit)",
-  "uSIFU (borrow)",
+  "uSIFU (deposit) OLD —",
+  "uSIFU (borrow) OLD —",
   "uMIM (deposit)",
   "uMIM (borrow)",
   "uLUSD (deposit)",
@@ -63,7 +65,9 @@ const uwuContractNames = [
   "uSIFUM (deposit)",
   "uSIFUM (borrow)",
   "uBLUSD (deposit)",
-  "uBLUSD (borrow)"
+  "uBLUSD (borrow)",
+  "uSIFU (deposit)",
+  "uSIFU (borrow)",
 ];
 
 export default function Home() {
@@ -202,7 +206,7 @@ export default function Home() {
           {UwURewards.map((item, index) => (
             <div key={index}>
               <input value={item["val"]} type="checkbox" onChange={handleCheck} />
-              <span>{Number(ethers.utils.formatEther(item["val"])).toFixed(2)}{"\t"}UwU{"\t"} — {uwuContractNames[item["idx"]]}</span>
+              <span>{Number(ethers.utils.formatEther(item["val"])).toFixed(2)}{"\t"}UwU{"\t"} — {uwuContractNames[item["idx"]]}{uwuContractNames[item["idx"]].includes("OLD") ? <a color="green" href="https://medium.com/sifu-vision-news/sifuvision-token-migration-28b23a7ade9e"> How to migrate (Medium article) ↗</a> : <span></span>}</span>
             </div>
           ))}
         </div> : <span></span>}<br />
