@@ -48,8 +48,8 @@ const uwuContractNames = [
   "uWETH (borrow)",
   "uWBTC (deposit)",
   "uWBTC (borrow)",
-  "uSIFU (deposit) OLD —",
-  "uSIFU (borrow) OLD —",
+  "OLD uSIFU (deposit)",
+  "OLD uSIFU (borrow)",
   "uMIM (deposit)",
   "uMIM (borrow)",
   "uLUSD (deposit)",
@@ -161,7 +161,9 @@ export default function Home() {
     for (var i = 0; i < rewards.length; i++) {
       var r = BigNumber.from(rewards[i]).add(BigNumber.from(0));
       if (!r.eq(BigNumber.from(0))) {
-        indexed.push({ idx: i, val: r });
+        if (Number(ethers.utils.formatEther(r.toString())).toFixed(2).toString() != "0.00") {
+          indexed.push({ idx: i, val: r });
+        }
       }
     }
 
@@ -192,29 +194,174 @@ export default function Home() {
     await updateTokenState();
   }
 
+  function formatEthereumAddress(address) {
+    if (typeof address !== 'string' || !address.match(/^0x[0-9a-fA-F]+$/)) {
+      throw new Error('Invalid Ethereum address format');
+    }
+
+    const prefix = '0x';
+    const firstChars = address.slice(2, 6); // Get characters from index 2 to 5
+    const lastChars = address.slice(-4); // Get the last 4 characters
+
+    return prefix + firstChars + '...' + lastChars;
+  }
+
   return (
-    <div style={{ "padding": 10 }}>
-      <h1>UwU Lend vesting UI</h1>
-      <p>This UI allows you to vest UwU rewards from specific deposits/borrows which greatly reduces gas fees.</p>
-      <div className="flex flex-col items-center justify-center">
-        {!active ? <button style={{ "margin-right": 10 }} onClick={connect}>Connect to MetaMask</button> : <span></span>}
-        {!active ? <button style={{ "margin-right": 10 }} onClick={connectWalletConnect}> Connect to WalletConnect </button> : <span></span>}
-        {active ? <span>Connected with <b>{account} </b></span> : <span></span>}
-        {active ? <span><button onClick={disconnect}>Disconnect</button> <button onClick={updateTokenState}> Refresh state </button></span> : <span></span>}
-        <br /><br />
-        {active ? <div>
-          {UwURewards.map((item, index) => (
-            <div key={index}>
-              <input value={item["val"]} type="checkbox" onChange={handleCheck} />
-              <span>{Number(ethers.utils.formatEther(item["val"])).toFixed(2)}{"\t"}UwU{"\t"} — {uwuContractNames[item["idx"]]}{uwuContractNames[item["idx"]].includes("OLD") ? <a color="green" href="https://medium.com/sifu-vision-news/sifuvision-token-migration-28b23a7ade9e"> How to migrate (Medium article) ↗</a> : <span></span>}</span>
+    <div className="p-10 bg-purple-200 flex flex-col h-screen">
+      <header className="bg-purple-200">
+        <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <div class="sm:flex sm:items-center sm:justify-between">
+            <div class="text-center sm:text-left">
+              <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+                UwU Lend Vesting UI
+              </h1>
+
+              <p class="mt-1.5 text-sm text-gray-500">
+                This UI allows you to vest UwU rewards from specific deposits/borrows, which greatly reduces gas fees.
+              </p>
             </div>
-          ))}
-        </div> : <span></span>}<br />
-        {UwURewards.length != 0 ? <p>Always claimable: {Number(ethers.utils.formatEther(baseRewards)).toFixed(2)} UwU</p> : <span></span>}
-        {active ? <span><button disabled={sumChecked == 0} onClick={claimUwU}>Vest {Number(ethers.utils.formatEther(sumChecked)).toFixed(2)} UwU</button></span> : <span></span>}
-        <br /><br />
-        <p><a color="green" href="https://github.com/pbnather/uwulend-simple-ui">Github ↗</a>, copyright by <a color="green" href="https://twitter.com/pbnather">@pbnather</a> 2023</p>
+
+            {!active ? (
+              <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+                <button
+                  class="inline-flex items-center justify-center gap-1.5 block rounded-lg bg-orange-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-orange-700 focus:outline-none focus:ring"
+                  type="button"
+                  onClick={connect}
+                >
+                  <span class="text-sm font-medium"> MetaMask </span>
+                </button>
+
+                <button
+                  class="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
+                  type="button"
+                  onClick={connectWalletConnect}
+                >
+                  WalletConnect
+                </button>
+              </div>
+            ) : (
+              <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+                <span className="flex flex-col items-left">Connected with <b>{formatEthereumAddress(account)}</b></span>
+                {/* <button
+                  class="inline-flex items-center justify-center gap-1.5 block rounded-lg bg-orange-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-orange-700 focus:outline-none focus:ring"
+                  type="button"
+                  onClick={connect}
+                >
+                  <span class="text-sm font-medium"> MetaMask </span>
+                </button> */}
+
+                <button
+                  class="block rounded-lg bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring"
+                  type="button"
+                  onClick={disconnect}
+                >
+                  Disconnect
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+      {/* <h1 className="text-3xl font-bold">UwU Lend Vesting UI</h1>
+      <p className="mt-2">This UI allows you to vest UwU rewards from specific deposits/borrows, which greatly reduces gas fees.</p> */}
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8 bg-purple-200">
+        {/* {!active ? (
+          <div className="flex flex-col">
+            <button className="flex-row mr-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={connect}>
+              Connect to MetaMask
+            </button>
+            <button className="flex py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={connectWalletConnect}>
+              Connect to WalletConnect
+            </button>
+          </div>
+        ) : (
+          <span className="flex flex-col items-left">Connected with <b>{account}</b></span>
+        )} */}
+        {/* {active && (
+          <span>
+            <button className="py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600" onClick={disconnect}>
+              Disconnect
+            </button>
+            <button className="ml-2 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600" onClick={updateTokenState}>
+              Refresh state
+            </button>
+          </span>
+        )} */}
+        {active && (
+          <div class="h-32 rounded-lg">
+            {UwURewards.map((item, index) => (
+              <div key={index} className="p-1">
+                <input
+                  value={item["val"]}
+                  type="checkbox"
+                  onChange={handleCheck}
+                  id={index}
+                  class="peer hidden [&:checked_+_label_svg]:block [&:default_+_label_svg]:block"
+                />
+
+                <label
+                  for={index}
+                  class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 fill-slate-300 peer-checked:fill-cyan-500"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg
+                      class="h-5 w-5 text-blue-600 fill-inherit"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <p class="text-gray-700">{Number(ethers.utils.formatEther(item["val"])).toFixed(2)} UwU</p>
+                  </div>
+                  <div>
+                    <p>{uwuContractNames[item["idx"]]}</p>
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* {active && (
+          <div>
+            {UwURewards.map((item, index) => (
+              <div key={index} className="mb-2">
+                <input className="mr-2" value={item["val"]} type="checkbox" onChange={handleCheck} />
+                <span>{Number(ethers.utils.formatEther(item["val"])).toFixed(2)} UwU — {uwuContractNames[item["idx"]]}{uwuContractNames[item["idx"]].includes("OLD") ? <a className="text-green-500 hover:underline" href="https://medium.com/sifu-vision-news/sifuvision-token-migration-28b23a7ade9e"> How to migrate (Medium article) ↗</a> : <span></span>}</span>
+              </div>
+            ))}
+          </div>
+        )}<br /> */}
+        <div class="h-32 inline rounded-lg bg-white flex flex-col place-content-center">
+          {active && (
+            <div class="mx-auto">
+              <button className={`ml-10 inline py-2 px-4 ${sumChecked === 0 ? 'bg-cyan-400 cursor-not-allowed' : 'bg-cyan-500 hover:bg-cyan-400 text-white'} rounded sm:items-center text-center sm:justify-between`} onClick={claimUwU} disabled={sumChecked === 0}>
+                Vest {Number(ethers.utils.formatEther(sumChecked)).toFixed(2)} UwU
+              </button>
+              {UwURewards.length !== 0 && (
+                <p class="inline ml-10">Always claimable: {Number(ethers.utils.formatEther(baseRewards)).toFixed(2)} UwU</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div >
+      {/* <footer class="flex absolute bottom-0 bg-purple-200">
+        <p><a className="text-green-500 hover:underline" href="https://github.com/pbnather/uwulend-simple-ui">Github ↗</a>, copyright by <a className="text-green-500 hover:underline" href="https://twitter.com/pbnather">@pbnather</a> 2023</p>
+      </footer> */}
+      <footer class="flex absolute bottom-0 bg-purple-200">
+        <div
+          class="mt-8 grid grid-cols-2 gap-8 lg:mt-0 lg:grid-cols-5 lg:gap-y-16"
+        >
+          <div class="col-span-2">
+            <div>
+              <p><a className="text-green-500 hover:underline" href="https://github.com/pbnather/uwulend-simple-ui">Github ↗</a>, copyright by <a className="text-green-500 hover:underline" href="https://twitter.com/pbnather">@pbnather</a> 2023</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
