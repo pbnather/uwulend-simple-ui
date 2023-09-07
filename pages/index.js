@@ -36,7 +36,9 @@ const uwuContracts = [
   "0x51144708b82eA3b5b1002C9DC38b71ec63b7e670",
   "0xEc12f63116bD2493104a26FbDBCd70f51ab7B2C1",
   "0xD1E6b03bF65B381cBDecCf275535d40D4C3510E2",
-  "0x453842ba9dCD4569407B2adEDeB8636314D023D3"
+  "0x453842ba9dCD4569407B2adEDeB8636314D023D3",
+  "0xe873e375065Ce4DD7F96a289f74f885509748Fad",
+  "0x82A49C799C4CA5Bdb629BcD6107737A3De8D2805"
 ];
 
 const uwuContractNames = [
@@ -68,6 +70,8 @@ const uwuContractNames = [
   "uBLUSD (borrow)",
   "uSIFU (deposit)",
   "uSIFU (borrow)",
+  "VOLTA (deposit)",
+  "VOLTA (borrow)"
 ];
 
 export default function Home() {
